@@ -91,7 +91,7 @@ public:
 
         uchar *row,*tmprow;
 
-        for(i=0;i<h;i++){
+        for(i=0;i<h;i++){   //  visualize the result -> output
             row=output.ptr<uchar>(i);
             tmprow=fg.ptr<uchar>(i);
             for(j=0;j<w;j++){
@@ -154,7 +154,7 @@ public:
                         p.x=x;
                         p.y=y;
                         _queue.push(p);
-                        while(!(_queue.empty())){
+                        while(!(_queue.empty())){  // find all pixels connect to (x,y)
                             p=_queue.front();
                             _queue.pop();
                             for(z=0;z<4;z++){
@@ -207,7 +207,7 @@ public:
         hog(cv::Size(48,48), cv::Size(16,16), cv::Size(8,8), cv::Size(8,8), 9),
         FGSegmentor()
     {
-        hog.load(_hog_path);
+        hog.load(_hog_path);  // load the classifier
         fg.create(cv::Size(1,1),CV_8UC3);
     }
 
@@ -215,6 +215,7 @@ public:
 
         result.clear();
 
+        // foreground segmentation
         FGSegmentor.processFrame(framePosition,frame,output);
 
         for(const cv::Rect &FGBoundingBox: FGSegmentor.result){
@@ -227,7 +228,7 @@ public:
                 face.x+=FGBoundingBox.x;
                 face.y+=FGBoundingBox.y;
                 if(face.height*1.3+face.y<frame.rows)
-                    face.height=floor(face.height*1.3);              // dilate
+                    face.height=floor(face.height*1.3);              // expand the ROI
                 result.push_back(face);
                 if(output.data!=NULL)
                     cv::rectangle(output,face,cv::Scalar(0,255,0));  // draw bounding boxes
